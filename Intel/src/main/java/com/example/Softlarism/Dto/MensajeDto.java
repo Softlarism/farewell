@@ -7,11 +7,11 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class EventosDto {
-    private Integer id_evento;
-    private String tipo;
-    private String descripcion;
+public class MensajeDto {
+    private Integer id_mensaje;
+    private String contenido;
     private Integer id_usuario;
+    private Integer id_comunidad;
     private LocalDateTime fecha;
-
 }
+
