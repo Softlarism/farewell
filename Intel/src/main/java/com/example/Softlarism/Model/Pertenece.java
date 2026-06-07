@@ -11,13 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table (name = "Pertenece")
+@Table(name = "Pertenece")
 public class Pertenece {
+
+
     @Id
+    @Column(name = "ID_PERTENECE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id_pertenece;
+
+
     @Column(name = "ID_USUARIO")
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Integer id_usuario;
+
     @Column(name = "ID_COMUNIDAD")
     private Integer id_comunidad;
-
 }

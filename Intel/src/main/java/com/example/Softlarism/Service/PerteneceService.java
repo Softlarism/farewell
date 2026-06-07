@@ -10,4 +10,7 @@ public interface PerteneceService {
     Pertenece save (Pertenece pertenece);
     void delete(Integer id);
     Pertenece update(Integer id,Pertenece pertenece);
+
+    List<Pertenece> getByUsuario(Integer idUsuario);
+    boolean existeRelacion(Integer idUsuario,Integer idComunidad);
 }

@@ -6,7 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class PerteneceDto {
-    private int id_usuario;
-    private int id_comunidad;
+    private Integer id_usuario;
+    private Integer id_comunidad;
+    private Integer id_pertenece;
 
 }
