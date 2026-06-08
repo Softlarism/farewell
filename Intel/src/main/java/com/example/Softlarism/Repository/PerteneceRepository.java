@@ -11,15 +11,16 @@ import java.util.List;
 @Repository
 public interface PerteneceRepository extends JpaRepository<Pertenece, Integer> {
 
-    // Usamos @Query explícito porque los campos llevan guion bajo (id_usuario),
-    // y así evitamos problemas con la generación automática de Spring Data.
-
     /** Todas las comunidades a las que pertenece un usuario. */
     @Query("SELECT p FROM Pertenece p WHERE p.id_usuario = :idUsuario")
     List<Pertenece> findByUsuario(@Param("idUsuario") Integer idUsuario);
 
-    /** true si ese usuario ya pertenece a esa comunidad (evitar duplicados). */
-    @Query("SELECT COUNT(p) > 0 FROM Pertenece p WHERE p.id_usuario = :idUsuario AND p.id_comunidad = :idComunidad")
-    boolean existeRelacion(@Param("idUsuario") Integer idUsuario,
-                           @Param("idComunidad") Integer idComunidad);
+    /**
+     * Cuenta cuántas filas coinciden con (usuario, comunidad).
+     * Usamos COUNT (en vez de "COUNT(p) > 0") porque la versión booleana
+     * falla en algunas versiones de Hibernate y provoca error 500.
+     */
+    @Query("SELECT COUNT(p) FROM Pertenece p WHERE p.id_usuario = :idUsuario AND p.id_comunidad = :idComunidad")
+    long contarRelacion(@Param("idUsuario") Integer idUsuario,
+                        @Param("idComunidad") Integer idComunidad);
 }

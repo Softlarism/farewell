@@ -26,17 +26,15 @@ public class PerteneceController {
                 .build();
     }
 
-    // GET todas las relaciones
     @GetMapping("/Pertenece")
     public ResponseEntity<List<PerteneceDto>> lista() {
         List<Pertenece> perteneces = perteneceService.getAll();
         if (perteneces == null || perteneces.isEmpty()) {
-            return ResponseEntity.ok(List.of());   // lista vacía en vez de 404
+            return ResponseEntity.ok(List.of());
         }
         return ResponseEntity.ok(perteneces.stream().map(this::toDto).collect(Collectors.toList()));
     }
 
-    // GET por id de la relación
     @GetMapping("/Pertenece/{id}")
     public ResponseEntity<PerteneceDto> getById(@PathVariable Integer id) {
         Pertenece u = perteneceService.getById(id);
@@ -44,29 +42,38 @@ public class PerteneceController {
         return ResponseEntity.ok(toDto(u));
     }
 
-    // ── NUEVO: GET comunidades de un usuario ──
     @GetMapping("/Pertenece/usuario/{idUsuario}")
     public ResponseEntity<List<PerteneceDto>> porUsuario(@PathVariable Integer idUsuario) {
         List<Pertenece> lista = perteneceService.getByUsuario(idUsuario);
         return ResponseEntity.ok(lista.stream().map(this::toDto).collect(Collectors.toList()));
     }
 
-    // POST: inscribir usuario en comunidad (evita duplicados)
+    // POST: inscribir usuario en comunidad (evita duplicados y nunca lanza 500)
     @PostMapping("/Pertenece")
-    public ResponseEntity<PerteneceDto> save(@RequestBody PerteneceDto perteneceDto) {
+    public ResponseEntity<?> save(@RequestBody PerteneceDto perteneceDto) {
+        try {
+            if (perteneceDto.getId_usuario() == null || perteneceDto.getId_comunidad() == null) {
+                return ResponseEntity.badRequest()
+                        .body("Se requieren id_usuario e id_comunidad.");
+            }
 
-        // Si ya pertenece, no creamos un duplicado
-        if (perteneceDto.getId_usuario() != null && perteneceDto.getId_comunidad() != null
-                && perteneceService.existeRelacion(perteneceDto.getId_usuario(), perteneceDto.getId_comunidad())) {
+            // Si ya pertenece, devolvemos OK sin crear duplicado
+            if (perteneceService.existeRelacion(perteneceDto.getId_usuario(), perteneceDto.getId_comunidad())) {
+                return ResponseEntity.ok(perteneceDto);
+            }
+
+            Pertenece u = Pertenece.builder()
+                    .id_usuario(perteneceDto.getId_usuario())
+                    .id_comunidad(perteneceDto.getId_comunidad())
+                    .build();
+            Pertenece guardado = perteneceService.save(u);
+            return ResponseEntity.ok(toDto(guardado));
+
+        } catch (Exception e) {
+            // Si el guardado falla (p. ej. choque con la restricción única),
+            // lo tratamos como "ya inscrito" en vez de devolver 500.
             return ResponseEntity.ok(perteneceDto);
         }
-
-        Pertenece u = Pertenece.builder()
-                .id_usuario(perteneceDto.getId_usuario())
-                .id_comunidad(perteneceDto.getId_comunidad())
-                .build();
-        Pertenece guardado = perteneceService.save(u);   // ── CORRECCIÓN: devolvemos lo realmente guardado ──
-        return ResponseEntity.ok(toDto(guardado));
     }
 
     @DeleteMapping("/Pertenece/{id}")

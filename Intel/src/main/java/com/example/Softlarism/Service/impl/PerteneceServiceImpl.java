@@ -36,7 +36,6 @@ public class PerteneceServiceImpl implements PerteneceService {
 
     @Override
     public Pertenece update(Integer id, Pertenece pertenece) {
-        // ── CORRECCIÓN: antes modificaba el objeto equivocado y no guardaba los cambios ──
         Pertenece aux = perteneceRepository.findById(id).orElse(null);
         if (aux == null) return null;
         aux.setId_usuario(pertenece.getId_usuario());
@@ -44,7 +43,6 @@ public class PerteneceServiceImpl implements PerteneceService {
         return perteneceRepository.save(aux);
     }
 
-    // ── NUEVOS ──
     @Override
     public List<Pertenece> getByUsuario(Integer idUsuario) {
         return perteneceRepository.findByUsuario(idUsuario);
@@ -52,6 +50,6 @@ public class PerteneceServiceImpl implements PerteneceService {
 
     @Override
     public boolean existeRelacion(Integer idUsuario, Integer idComunidad) {
-        return perteneceRepository.existeRelacion(idUsuario, idComunidad);
+        return perteneceRepository.contarRelacion(idUsuario, idComunidad) > 0;
     }
 }
