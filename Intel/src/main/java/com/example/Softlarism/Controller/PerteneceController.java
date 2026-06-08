@@ -57,8 +57,14 @@ public class PerteneceController {
                         .body("Se requieren id_usuario e id_comunidad.");
             }
 
-            // Si ya pertenece, devolvemos OK sin crear duplicado
+            // Si ya pertenece, devolvemos la fila existente (CON su id_pertenece)
             if (perteneceService.existeRelacion(perteneceDto.getId_usuario(), perteneceDto.getId_comunidad())) {
+                for (Pertenece p : perteneceService.getByUsuario(perteneceDto.getId_usuario())) {
+                    if (p.getId_comunidad() != null
+                            && p.getId_comunidad().equals(perteneceDto.getId_comunidad())) {
+                        return ResponseEntity.ok(toDto(p));   // incluye id_pertenece
+                    }
+                }
                 return ResponseEntity.ok(perteneceDto);
             }
 
