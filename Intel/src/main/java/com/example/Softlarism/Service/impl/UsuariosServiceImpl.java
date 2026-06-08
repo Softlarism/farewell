@@ -29,17 +29,26 @@ public class UsuariosServiceImpl implements UsuariosService {
     public void delete(Integer id){
         usuariosRepository.deleteById(id);
     }
+
+    // ── CORREGIDO ──
+    // Antes: copiaba los datos sobre sí mismo y guardaba 'aux' sin cambios,
+    // y getById() lanzaba excepción (error 500) si el id no existía.
     @Override
     public Usuarios update(Integer id, Usuarios usuarios){
-        Usuarios aux = usuariosRepository.getById(id);
-        usuarios.setNombre(usuarios.getNombre());
-        usuarios.setApellido(usuarios.getApellido());
-        usuarios.setContrasena(usuarios.getContrasena());
-        usuarios.setId_usuario(usuarios.getId_usuario());
-        usuarios.setNumero(usuarios.getNumero());
-        usuarios.setCp1(usuarios.getCp1());
-        usuarios.setTelefono(usuarios.getTelefono());
-        usuariosRepository.save(aux);
-        return aux;
+        Usuarios aux = usuariosRepository.findById(id).orElse(null);
+        if (aux == null) return null;
+
+        // Solo actualizamos los campos que llegan con valor (no borramos lo demás)
+        if (usuarios.getNombre() != null)     aux.setNombre(usuarios.getNombre());
+        if (usuarios.getApellido() != null)   aux.setApellido(usuarios.getApellido());
+        if (usuarios.getTelefono() != null)   aux.setTelefono(usuarios.getTelefono());
+        if (usuarios.getNumero() != null)     aux.setNumero(usuarios.getNumero());
+        if (usuarios.getCp1() != null)        aux.setCp1(usuarios.getCp1());
+        // La contraseña solo se cambia si viene una nueva
+        if (usuarios.getContrasena() != null && !usuarios.getContrasena().isEmpty()) {
+            aux.setContrasena(usuarios.getContrasena());
+        }
+
+        return usuariosRepository.save(aux);   // guardamos 'aux' YA con los cambios
     }
 }

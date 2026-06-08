@@ -130,6 +130,12 @@ public class UsuariosController {
                 .cp1(usuariosDto.getCp1())
                 .numero(usuariosDto.getNumero())
                 .build());
+
+        // Proteccion: si el usuario no existe, evitamos el NullPointer (error 500)
+        if (aux == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.ok(UsuariosDto.builder()
                 .id_usuario(aux.getId_usuario())
                 .nombre(aux.getNombre())
