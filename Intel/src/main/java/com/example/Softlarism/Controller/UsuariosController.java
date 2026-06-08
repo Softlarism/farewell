@@ -78,7 +78,7 @@ public class UsuariosController {
                 );
     }
     @RequestMapping("/Usuarios/{id}")
-    public ResponseEntity<UsuariosDto> getById(@PathVariable Integer id_usuario){
+    public ResponseEntity<UsuariosDto> getById(@PathVariable("id") Integer id_usuario){
 
         Usuarios u =  usuariosService.getById(id_usuario);
         if ( u == null){
@@ -113,13 +113,13 @@ public class UsuariosController {
                 .cp1(u.getCp1()).build());
     }
     @DeleteMapping("/Usuarios/{id}")
-    public ResponseEntity<UsuariosDto> delete(@PathVariable Integer id_usuario,@RequestBody UsuariosDto usuariosDto){
+    public ResponseEntity<UsuariosDto> delete(@PathVariable("id") Integer id_usuario){
 
         usuariosService.delete(id_usuario);
         return ResponseEntity.noContent().build();
     }
     @PutMapping("/Usuarios/{id}")
-    public ResponseEntity<UsuariosDto> update(@PathVariable Integer id_usuario,@RequestBody UsuariosDto usuariosDto){
+    public ResponseEntity<UsuariosDto> update(@PathVariable("id") Integer id_usuario,@RequestBody UsuariosDto usuariosDto){
 
         Usuarios aux = usuariosService.update(id_usuario,Usuarios
                 .builder()
